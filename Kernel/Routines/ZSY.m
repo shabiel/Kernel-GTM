@@ -347,7 +347,7 @@ UNIX(MODE,USERS,SORT) ;PUG/TOAD,FIS/KSB,VEN/SMH - Kernel System Status Report fo
  n procgrps
  n done s done=0
  n j s j=1
- n i f i=1:1 q:'$d(procs(i))  d
+ n i s i=0 f  s i=$o(procs(i)) q:'i  d
  . s procgrps(j)=$g(procgrps(j))_procs(i)_" "
  . i $l(procgrps(j))>220 s j=j+1 ; Max GT.M pipe len is 255
  f j=1:1 q:'$d(procgrps(j))  d
@@ -432,7 +432,7 @@ INTRPTALL(procs) ; [Public] Send mupip interrupt to every single database proces
  ; Collect processes
  D UNIXLSOF(.procs)
  ; Signal all processes
- N i,% F i=1:1 q:'$d(procs(i))  S %=$ZSIGPROC(procs(i),SIGUSR1)
+ N i,% s i=0 f  s i=$o(procs(i)) q:'i  S %=$ZSIGPROC(procs(i),SIGUSR1)
  QUIT
  ;
 HALTALL ; [Public] Gracefully halt all jobs accessing current database
