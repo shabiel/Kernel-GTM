@@ -1,4 +1,4 @@
-%ZISH ;IHS/PR,SFISC/AC - Host File Control for Cache for VMS/NT/UNIX ;05/22/12  11:01
+%ZISH ;IHS/PR,SFISC/AC - Host File Control for Cache for VMS/NT/UNIX ; 6/4/18 4:39pm
  ;;8.0;KERNEL;**34,65,84,104,191,306,385,440,518,524,546,599**;JUL 10, 1995;Build 8
  ;Per VHA Directive 2004-038, this routine should not be modified
  ;
@@ -203,6 +203,78 @@ STATUS() ;ef,SR. Return EOF status
  ;
 EOF(X) ;Eof flag, pass in $ZEOF
  Q (X=-1)
+ ;
+MKDIR(DIR) ; ef,SR. *10002* Make directory
+ N OS S OS=$$OS^%ZOSV()
+ I OS="UNIX" Q $$RETURN^%ZOSV("mkdir -p "_DIR,1)
+ I OS="NT" Q $$RETURN^%ZOSV("mkdir "_DIR,1) ; Windows does not need parents flag since Windows XP
+ S $EC=",U-UNIMPLEMENTED," ; Don't support VMS.
+ ;
+SIZE(DIR,FILE) ; ef,SR. *10002* Get Size of a File
+ N OS S OS=$$OS^%ZOSV()
+ I OS="UNIX" Q $$RETURN^%ZOSV("stat -c%s "_$$DEFDIR(DIR)_FILE)
+ ;
+ ; WINDOWS IS NASTY!
+ ; https://stackoverflow.com/questions/483864/windows-command-for-file-size-only
+ I OS="NT" Q $$RETURN^%ZOSV("for %I in ("_$$DEFDIR(DIR)_FILE_") do @echo %~zI")
+ ;
+ S $EC=",U-UNIMPLEMENTED," ; Don't support VMS.
+ ;
+WGETSYNC(server,remoteDir,localDir,filePatt,port,isTLS) ; ef,SR. *10002* Sync remote directory
+ s port=$g(port,443)
+ s isTLS=$g(isTLS,1)
+ ;
+ i $e(remoteDir)'="/" s remoteDir="/"_remoteDir
+ ;
+ n url s url="http"
+ i isTLS s url=url_"s"
+ s url=url_"://"_server_":"_port_remoteDir
+ ;
+ ; -r recursive
+ ; -N Turn on time-stamping
+ ; -nd Do not create directories
+ ; -np Do not follow follow
+ ; -A What to accept (file pattern)
+ ; -P where to save
+ ;
+ N OS S OS=$$OS^%ZOSV()
+ I OS="NT" D WGETWIN QUIT
+ I OS'="UNIX" S $EC=",U-UNIMPLMENTED,"
+ ;
+ ; Get compressed file from remote source
+ n %cmd s %cmd="wget --header='Accept-Encoding: gzip' -rNndp -A '"_filePatt_"' '"_url_"' -P "_localDir
+ n % s %=$$RETURN^%ZOSV(%cmd,1)
+ i % quit %
+ ;
+ ; Rename them to .gz if they are really compressed
+ n %cmd s %cmd="for f in `file "_localDir_"/* | grep gzip | cut -d':' -f1`; do mv $f $f.gz; done"
+ n % s %=$$RETURN^%ZOSV(%cmd,1)
+ i % quit %
+ ;
+ ; gunzip (but don't warn if there is nothing to do: -q)
+ n %cmd s %cmd="gzip -dq "_localDir_"/*"
+ n % s %=$$RETURN^%ZOSV(%cmd,1)
+ i % quit %
+ ;
+ ; dos2unix
+ n %cmd s %cmd="dos2unix "_localDir_"/"_filePatt
+ n % s %=$$RETURN^%ZOSV(%cmd,1)
+ i % quit %
+ ;
+ quit %
+ ;
+WGETWIN ; [Private] Implementation of WGETSYNC for Cache on Windows
+ ; There is no file command on Windows; so can't identify gzip files
+ ; So, sad to say, but we will have to download the big fat unzipped files
+ ; Also, cmd can't use single quotes as delimters. So we have to use ""
+ ; No dos2unix is necessary since we are on DOS.
+ ; ZEXCEPT: server,remoteDir,localDir,filePatt,port,isTLS
+ ;
+ n q s q=""""
+ n sp s sp=" "
+ n %cmd s %cmd="wget -rNndp -A "_q_filePatt_q_sp_q_url_q_" -P "_localDir
+ n % s %=$$RETURN^%ZOSV(%cmd,1)
+ quit %
  ;
 MAKEREF(HF,IX,OVF) ;Internal call to rebuild global ref.
  ;Return %ZISHF,%ZISHO,%ZISHI,%ZISUB

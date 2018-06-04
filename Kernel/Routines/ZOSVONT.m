@@ -1,4 +1,4 @@
-%ZOSV ;SFISC/AC - $View commands for Open M for NT.  ; 12/4/16 3:59pm
+%ZOSV ;SFISC/AC - $View commands for Open M for NT.  ; 6/4/18 3:11pm
  ;;8.0;KERNEL;**34,94,107,118,136,215,293,284,385,425,440,499**;Jul 10, 1995;Build 14
  ;Per VHA Directive 2004-038, this routine should not be modified
 ACTJ() ;# Active jobs
@@ -21,8 +21,8 @@ AVJ() ;# available jobs
  . S T=+LMFLIM+$P(LMFLIM,"|",2) ;Check the license total
  . S AVJ=$S(T<MAXPID:X,1:MAXPID-$$ACTJ) ;Return the smaller of license or pid
  ;To get available jobs from Cache 5.0 up
- ; I V'<5 D  Q AVJ
- ; . X "S AVJ=$system.License.LUAvailable()"
+ I V'<5 D  Q AVJ
+ . X "S AVJ=$system.License.LUAvailable()"
  ;Return fixed value not known version
  Q 15
  ;
@@ -168,3 +168,27 @@ T0 ; start RT clock, obsolete
 T1 ; store RT datum, obsolete
  ;S ^%ZRTL(3,XRTL,+$H,XRTN,$P($H,",",2))=XRT0 K XRT0
  Q
+RETURN(%COMMAND,JUSTSTATUS) ; [Public] execute a shell command 
+ ; - return the last line; or just the status of the command.
+ ; %COMMAND is the string value of the Linux/Windows command
+ ;
+ ; OSE/SMH: Cache implementation notes:
+ ;
+ ; - I don't see a way for Cache to suppress output of $ZF or
+ ; alternately to return the status of "QR" open. That's why
+ ; we have two different implentations for status vs no status.
+ ;
+ ; "QR" open note: The default timeout for close is 30 seconds. If the
+ ; process is long-lived, we will not close. I don't know if that's
+ ; the best way to do things right now.
+ ;
+ I $G(JUSTSTATUS) Q $ZF(-1,%COMMAND)
+ ;
+ N OLDIO S OLDIO=$IO
+ O %COMMAND:"QR":2
+ E  Q -1
+ N % S %=$System.Process.SetZEOF(1) ; Prevent Cache from throwing an error at EOF
+ U %COMMAND
+ N OUT R OUT:2
+ U OLDIO C %COMMAND
+ Q OUT
