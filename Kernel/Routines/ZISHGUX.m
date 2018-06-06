@@ -1,5 +1,5 @@
-%ZISH ;ISF/AC,RWF,VEN/SMH - GT.M for Unix Host file Control ;2018-04-20  10:01 AM
- ;;8.0;KERNEL;**275,306,385,524,10001,10002**;Jul 10, 1995;Build 20
+%ZISH ;ISF/AC,RWF,VEN/SMH - GT.M for Unix Host file Control ;2018-06-06  1:47 PM
+ ;;8.0;KERNEL;**275,306,385,524,10001,10002**;Jul 10, 1995;Build 25
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine authored by Department of Veterans Affairs
  ; EPs OPEN,DEL1,CD,PWD,MAXREC,MKDIR,SIZE,WGETSYNC,DF,SEND,SENDTO1 
@@ -190,6 +190,7 @@ MKDIR(DIR) ; ef,SR. *10002* Make directory
  Q %
  ;
 SIZE(DIR,FILE) ; ef,SR. *10002* Get Size of a File
+ I $ZV["Darwin" Q $$RETURN^%ZOSV("stat -f%z "_$$DEFDIR(DIR)_FILE)
  Q $$RETURN^%ZOSV("stat -c%s "_$$DEFDIR(DIR)_FILE)
  ;
 WGETSYNC(server,remoteDir,localDir,filePatt,port,isTLS) ; ef,SR. *10002* Sync remote directory
@@ -222,6 +223,7 @@ WGETSYNC(server,remoteDir,localDir,filePatt,port,isTLS) ; ef,SR. *10002* Sync re
  ; gunzip (but don't warn if there is nothing to do: -q)
  n %cmd s %cmd="gzip -dq "_localDir_"/*"
  n % s %=$$RETURN^%ZOSV(%cmd,1)
+ i %=1 s %=0 ; BSD gzip (in OS X) will return 1 if there are no files to operate on. Error safe to ignore.
  i % quit %
  ;
  ; dos2unix
