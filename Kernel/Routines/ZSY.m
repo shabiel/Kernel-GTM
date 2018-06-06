@@ -1,4 +1,4 @@
-ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-05-02  4:00 PM
+ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-06-06  1:27 PM
  ;;8.0;KERNEL;**349,10001,10002**;Jul 10, 1995;Build 20
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine of unknown provenance -- was in unreleased VA patch XU*8.0*349 and thus perhaps in the public domain.
@@ -414,7 +414,9 @@ UNIXLSOF(procs) ; [Public] - Get all processes accessing THIS database (only!)
  u "lsof"
  n i f i=1:1 q:$ZEOF  r procs(i):1  i procs(i)="" k procs(i)
  u oldio c "lsof"
- quit:$Q i-2 quit
+ n cnt s cnt=0
+ n i f i=0:0 s i=$o(procs(i)) q:'i  i $i(cnt)
+ quit:$Q cnt quit
  ;
 INTRPT(%J) ; [Public] Send mupip interrupt (currently SIGUSR1)
  N SIGUSR1
