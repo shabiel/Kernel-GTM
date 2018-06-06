@@ -467,23 +467,14 @@ Tests ran by ZOSVONUT:
 ```
 >d ^ZOSVONUT
 
-
  ---------------------------------- ZOSVONUT ----------------------------------
- XUSHSH - Top of XUSHSH.---------------------------------------  [OK]    0.063ms
- SHA - SHA-1 and SHA-256 in Hex and Base64....-----------------  [OK]    0.143ms
- BASE64 - Base 64 Encode and Decode..--------------------------  [OK]    0.060ms
- RSAENC - Test RSA EncryptionGenerating a 2048 bit RSA private key
- ...............+++
- .....+++
- writing new private key to '/tmp/mycert.key'
- -----
- ...Generating RSA private key, 2048 bit long modulus
- ................................................................+++
- .+++
- e is 65537 (0x10001)
- .....--------------------------  [OK]  248.881ms
- AESENC - Test AES Encryption.---------------------------------  [OK]    0.074ms
-
- Ran 1 Routine, 5 Entry Tags
- Checked 16 tests, with 0 failures and encountered 0 errors.
-```
+XUSHSH - Top of XUSHSH.---------------------------------------  [OK]    0.051ms
+SHA - SHA-1 and SHA-256 in Hex and Base64....-----------------  [OK]    1.147ms
+BASE64 - Base 64 Encode and Decode..--------------------------  [OK]    0.030ms
+RSAENC - Test RSA Encryption........--------------------------  [OK] 3038.698ms
+AESENC - Test AES Encryption.---------------------------------  [OK]    0.086ms
+SIZE - $$SIZE^%ZISH.------------------------------------------  [OK]   63.093ms
+MKDIR - $$MKDIR^%ZISH for Unix--------------------------------  [OK]    0.024ms
+MDWIN - $$MKDIR^%ZISH for Windows..---------------------------  [OK]  128.696ms
+WGETSYNC - $$WGETSYNC^%ZISH on NDF DAT files for Unix and Windows......
+ -------------------------------------------------------------  [OK] 9498.746ms
