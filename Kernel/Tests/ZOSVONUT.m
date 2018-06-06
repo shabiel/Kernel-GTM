@@ -1,11 +1,16 @@
-ZOSVONUT ; VEN/SMH - Unit Tests for Cache Encryption Functions XUSHSH;2017-10-30  5:32 pm ; 6/4/18 5:33pm
- ;;8.0;KERNEL;**10001**;;Build 18
+ZOSVONUT ; VEN/SMH - Unit Tests for Cache Encryption Functions XUSHSH;2017-10-30  5:32 pm ; 6/6/18 6:46am
+ ;;8.0;KERNEL;**10001,10002**;;Build 24
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Authored by Sam Habiel 2017
  ; This is a copy of ZOSVGUT2 modified to work on Cache
  ;
+ ; Windows Users:
+ ; Openssl for Windows: https://slproweb.com/products/Win32OpenSSL.html - Restart Cache after install
+ ; Wget for Windows: https://eternallybored.org/misc/wget/
+ ;
  D EN^%ut($t(+0),3)
  quit
+ ;
 XUSHSH ; @TEST Top of XUSHSH
  N X S X="TEST"
  D ^XUSHSH
@@ -81,7 +86,7 @@ SIZE ; @TEST $$SIZE^%ZISH
  D CHKTF^%ut(%>1000)
  QUIT
  ;
-MKDIR ; @TEST $$MKDIR^%ZISH
+MKDIR ; @TEST $$MKDIR^%ZISH for Unix
  N OS S OS=$$OS^%ZOSV
  I OS'="UNIX" QUIT
  N % S %=$$RETURN^%ZOSV("rm -r /tmp/foo/boo",1)
@@ -95,18 +100,19 @@ MKDIR ; @TEST $$MKDIR^%ZISH
 MDWIN ; @TEST $$MKDIR^%ZISH for Windows
  N OS S OS=$$OS^%ZOSV
  I OS'="NT" QUIT
- N % S %=$$RETURN^%ZOSV("del /q /f %temp%\foo\boo",1)
- N % S %=$$MKDIR^%ZOSV("%temp%\foo\boo")
+ N % S %=$$RETURN^%ZOSV("rmdir /s /q %temp%\foo",1)
+ N % S %=$$MKDIR^%ZISH("%temp%\foo\boo")
  D CHKTF^%ut(%=0)
- N % S %=$$RETURN^%ZOSV("dir %temp\foo\boo",1)
+ N % S %=$$RETURN^%ZOSV("dir %temp%\foo\boo",1)
  D CHKTF^%ut(%=0)
  QUIT
  ;
-WGETSYNC ; @TEST $$WGETSYNC^%ZISH on NDF DAT files for Unix
+WGETSYNC ; @TEST $$WGETSYNC^%ZISH on NDF DAT files for Unix and Windows
  N OS S OS=$$OS^%ZOSV
  N FOLDER
  I OS="UNIX" S FOLDER="/tmp/foo/boo"
- I OS="NT" S FOLDER="%temp%\foo\boo"
+ n temp s temp=$System.Util.GetEnviron("TEMP")
+ I OS="NT" S FOLDER=temp_"\foo\boo"
  N SEC1 S SEC1=$P($H,",",2)
  N % S %=$$WGETSYNC^%ZISH("foia-vista.osehra.org","Patches_By_Application/PSN-NATIONAL DRUG FILE (NDF)/PPS_DATS/",FOLDER,"*.DAT*")
  D CHKTF^%ut(%=0)

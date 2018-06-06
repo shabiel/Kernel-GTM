@@ -1,6 +1,9 @@
-%ZISH ;IHS/PR,SFISC/AC - Host File Control for Cache for VMS/NT/UNIX ; 6/4/18 4:39pm
- ;;8.0;KERNEL;**34,65,84,104,191,306,385,440,518,524,546,599**;JUL 10, 1995;Build 8
- ;Per VHA Directive 2004-038, this routine should not be modified
+%ZISH ;IHS/PR,SFISC/AC - Host File Control for Cache for VMS/NT/UNIX ; 6/6/18 7:39am
+ ;;8.0;KERNEL;**34,65,84,104,191,306,385,440,518,524,546,599,10002**;JUL 10, 1995;Build 24
+ ;
+ ; *10002* changes (c) Sam Habiel 2018
+ ; Licensed under Apache 2.0
+ ; Unit Tests can be found in routine ZOSVONUT.
  ;
  ; ZEXCEPT: IOM,IOSL,IOT,POP
 OPEN(X1,X2,X3,X4,X5,X6)    ;SR. Open Host File
@@ -207,7 +210,10 @@ EOF(X) ;Eof flag, pass in $ZEOF
 MKDIR(DIR) ; ef,SR. *10002* Make directory
  N OS S OS=$$OS^%ZOSV()
  I OS="UNIX" Q $$RETURN^%ZOSV("mkdir -p "_DIR,1)
- I OS="NT" Q $$RETURN^%ZOSV("mkdir "_DIR,1) ; Windows does not need parents flag since Windows XP
+ I OS="NT" N % D  Q %
+ . S %=$$RETURN^%ZOSV("mkdir "_DIR,1) ; Windows does not need parents flag since Windows XP
+ . I %=1 S %=0 ; Directory already exists; no way to suppress this error.
+ ;
  S $EC=",U-UNIMPLEMENTED," ; Don't support VMS.
  ;
 SIZE(DIR,FILE) ; ef,SR. *10002* Get Size of a File
@@ -238,7 +244,7 @@ WGETSYNC(server,remoteDir,localDir,filePatt,port,isTLS) ; ef,SR. *10002* Sync re
  ; -P where to save
  ;
  N OS S OS=$$OS^%ZOSV()
- I OS="NT" D WGETWIN QUIT
+ I OS="NT" Q $$WGETWIN
  I OS'="UNIX" S $EC=",U-UNIMPLMENTED,"
  ;
  ; Get compressed file from remote source
@@ -263,17 +269,25 @@ WGETSYNC(server,remoteDir,localDir,filePatt,port,isTLS) ; ef,SR. *10002* Sync re
  ;
  quit %
  ;
-WGETWIN ; [Private] Implementation of WGETSYNC for Cache on Windows
+WGETWIN() ; [Private] Implementation of WGETSYNC for Cache on Windows
  ; There is no file command on Windows; so can't identify gzip files
  ; So, sad to say, but we will have to download the big fat unzipped files
  ; Also, cmd can't use single quotes as delimters. So we have to use ""
  ; No dos2unix is necessary since we are on DOS.
  ; ZEXCEPT: server,remoteDir,localDir,filePatt,port,isTLS
  ;
+ ; Wget has issues on Windows due to compilation with MinGW CRT.
+ ; See http://lists.gnu.org/archive/html/bug-wget/2018-06/msg00008.html
+ ;
+ ; Wget version I used:
+ ; https://eternallybored.org/misc/wget/, 64 bit binary
+ ;
+ n newFilePatt s newFilePatt=filePatt
+ i $e(filePatt)="*" s newFilePatt=$e(filePatt)_"["_$e(filePatt,2)_"]"_$e(filePatt,3,99)
  n q s q=""""
  n sp s sp=" "
- n %cmd s %cmd="wget -rNndp -A "_q_filePatt_q_sp_q_url_q_" -P "_localDir
- n % s %=$$RETURN^%ZOSV(%cmd,1)
+ s %cmd="wget -rNndp -A "_q_newFilePatt_q_sp_q_url_q_" -P "_localDir
+ s %=$$RETURN^%ZOSV(%cmd,1)
  quit %
  ;
 MAKEREF(HF,IX,OVF) ;Internal call to rebuild global ref.
