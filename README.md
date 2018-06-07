@@ -1,6 +1,8 @@
-Kernel-GTM
-==========
-Enhancements to the VistA Kernel for GT.M. 
+VistA/RPMS Kernel Enhancements Project
+======================================
+Enhancements to the VistA Kernel for GT.M and Cache. Originally, this project
+focused only on GT.M, but due to redaction and omissions in VA code, various
+Cache routines have been enhanced, like ZISHONT and ZOSVONT.
 
 Products & Installation
 -----------------------
