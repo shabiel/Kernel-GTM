@@ -1,5 +1,8 @@
-KMPDUTL1 ;OAK/RAK,KAK,JML - CM TOOLS Utilities ;2/17/04
- ;;4.0;CAPACITY MANAGEMENT;;11/15/2017
+KMPDUTL1 ;OAK/RAK,KAK,JML - CM TOOLS Utilities ;2018-06-11  1:14 PM
+ ;;4.0;CAPACITY MANAGEMENT;*10003*;11/15/2017;Build 38
+ ;
+ ; *10003* changes by OSEHRA/Sam Habiel
+ ; (c) Sam Habiel 2018
  ;
 CONT(KMPDEXT)  ;-- function displays 'return to continue' message at bottom of page
  ;--------------------------------------------------------------------
@@ -59,12 +62,13 @@ MPLTF() ;-- returns the type of M platform
  ; Returns:  DSM    for DSM platform
  ;           CVMS   for Cache for OpenVMS platform
  ;           CWINNT for Cache for Windows NT platform
+ ;           GTM    for GT.M/YottaDB (all supportable platforms) 
  ;---------------------------------------------------------------------
  ;
  N MPLTF,ZV
  ;
  S ZV=$ZV
- S MPLTF=$S(ZV["DSM":"DSM",ZV["VMS":"CVMS",ZV["Windows":"CWINNT",1:"UNK")
+ S MPLTF=$S(ZV["DSM":"DSM",ZV["VMS":"CVMS",ZV["Windows":"CWINNT",ZV["GT.M":"GTM",1:"UNK") ; *10003* added GTM
  Q MPLTF
  ;
 OSVER(MPLTF) ;-- returns the operating system version
@@ -77,12 +81,13 @@ OSVER(MPLTF) ;-- returns the operating system version
  I MPLTF["DSM" Q $ZC(%GETSYI,"VERSION")
  I MPLTF["CVMS" Q $$CVMSVER^KMPDUTL5()
  I MPLTF["CWINNT" Q $$CWNTVER^KMPDUTL5()
+ I MPLTF["GTM" Q $$RETURN^%ZOSV("uname -r") ; *10003* Linux/Darwin/Cygwin Version
  Q ""
  ;
 TSKSTAT(OPT) ;-- status of scheduled task option
  ;---------------------------------------------------------------------
  ; input  OPT = option name
- ;
+ ; 
  ; output RTN = by "^" piece
  ;               1 - status code
  ;               2 - literal condition
@@ -157,7 +162,7 @@ VERPTCH(PKG,RTNARRY)    ;-- returns current version and patch status of specifie
  ;
  ;        ;;routine name ^ current version ^ current patch(es)
  ;
- ; Example:
+ ; Example:    
  ;           PATCHINFO  ;-- patch information
  ;                      ;;KMPSGE^1.8^**1,2**
  ;                      ;;KMPSUTL^1.8^**1,2**
@@ -183,7 +188,7 @@ VERPTCH(PKG,RTNARRY)    ;-- returns current version and patch status of specifie
  .I $T(@(RTN_"^"_RTN))="" D  Q
  ..S TOTMISS=TOTMISS+1,TOTRTN=TOTRTN+1
  ..S RTNARRY(RTN)="2^"_VER_U_PTCH_"^^"
- .X "ZL @RTN S INFOSITE=$T(+2)"
+ .S INFOSITE=$T(+2^@RTN) ; *10003*; was: .X "ZL @RTN S INFOSITE=$T(+2)"
  .S VERSITE=$P(INFOSITE,";",3),PTCHSITE=$P(INFOSITE,";",5)
  .I VERSITE'=VER!(PTCHSITE'=PTCH) S BAD=1,OK=0
  .E  S BAD=0,OK=1
