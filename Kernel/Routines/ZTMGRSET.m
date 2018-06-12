@@ -1,10 +1,11 @@
-ZTMGRSET ;SF/RWF,PUG/TOAD - SET UP THE MGR ACCOUNT FOR THE SYSTEM ;2017-01-09  3:49 PM
- ;;8.0;KERNEL;**34,36,69,94,121,127,136,191,275,355,446,584,10001**;JUL 10, 1995;Build 8
+ZTMGRSET ;SF/RWF,PUG/TOAD - SET UP THE MGR ACCOUNT FOR THE SYSTEM ;2018-06-11  12:47 PM
+ ;;8.0;KERNEL;**34,36,69,94,121,127,136,191,275,355,446,584,10001,10003**;JUL 10, 1995;Build 8
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine authored by Department of Veterans Affairs
  ; Sam Habiel made tiny changes throughout routine (Max Patch > 999 now, ZISHGUX
  ; instead of ZISHGTM for GT.M on Unix) 2016.
  ; KS Bhaksar rewrote COPY and R 2014. Sam contributed bug fixes to these.
+ ; Christopher Edwards contributed to *10003*
  ;
  N %D,%S,I,OSMAX,U,X,X1,X2,Y,Z1,Z2,ZTOS,ZTMODE,SCR
  S ZTMODE=0
@@ -149,7 +150,7 @@ ZOSF(X) ;
  S %S="ZOSVGUX^^ZIS4GTM^ZISFGTM^ZISHGUX^XUCIGTM"
  D DES,MOVE
  S %S="ZOSV2GTM^ZISTCPS",%D="%ZOSV2^%ZISTCPS"
- D MOVE,RUM,ZOSF("ZOSFGUX")
+ D MOVE,RUM,ZOSF("ZOSFGUX") ; *10003* Add RUM support for GT.M/YDB
  Q
 10 ;;NOT SUPPORTED
  Q

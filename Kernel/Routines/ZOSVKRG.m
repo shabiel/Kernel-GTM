@@ -1,5 +1,9 @@
-%ZOSVKR ;YDB/CJE&OSE/SMH - ZOSVKRG - Collect RUM Statistics for GT.M on Linux ;5/28/2018
- ;;8.0;KERNEL;**90,94,107,122,143,186,550,568,670**;3/1/2018
+%ZOSVKR ;YDB/CJE&OSE/SMH - ZOSVKRG - Collect RUM Statistics for GT.M on Linux ;2018-06-12  1:39 PM
+ ;;8.0;KERNEL;**10003**;3/1/2018
+ ;
+ ; (c) Sam Habiel & Chirsopher Edwards 2018
+ ;
+ ; This routine implements Resource Monitoring for GT.M/YDB
  ;
 RO(KMPVOPT) ; Record option resource usage in ^KMPTMP("KMPR"
  ;
@@ -145,7 +149,8 @@ STATS() ;  return current stats for this $job
  N ORD S ORD=GLOSTAT("GSTAT","ORD")
  N ZPR S ZPR=GLOSTAT("GSTAT","ZPR")
  N QRY S QRY=GLOSTAT("GSTAT","QRY")
- S $P(KMPVRET,U,4)=SET+KIL+DTA+GET+ORD+ZPR+QRY  ;This needs to use $ZSHOW "G" DTA+GET+ORD+ZPR+QRY
+ S $P(KMPVRET,U,4)=SET+KIL+DTA+GET+ORD+ZPR+QRY
+ ;
  ;ZHOROLOG format: days,seconds,microseconds,offset in seconds
  ; current time UTC
  N ZH S ZH=$ZH          ; $ZH
