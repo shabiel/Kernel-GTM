@@ -1,5 +1,8 @@
-KMPDRDAT ;SP/JML - Cover Sheet Load Raw Data Extract ;5/1/2017
- ;;4.0;CAPACITY MANAGEMENT;;3/1/2018
+KMPDRDAT ;SP/JML - Cover Sheet Load Raw Data Extract ;2018-06-11  2:57 PM
+ ;;4.0;CAPACITY MANAGEMENT;*10003*;3/1/2018;Build 38
+ ;
+ ; *10003* (c) Sam Habiel 2018
+ ; *10003 changes: Change VA email address to postmaster
  ;
  ; Send raw data to CPE database
  ; START TIME^FG DELTA^BG DELTA^TOT DELTA^CLIENT DUZ^CLIENT NAME^KMPTMP SUBSCRIPT KEY^APPLICATION TITLE^IP^DFN
@@ -55,7 +58,7 @@ ORONE(KMPDSUB) ;
  .S $P(KMPDDATA,U,7)=KMPDSUB
  .; application title
  .S $P(KMPDDATA,U,8)="CPRS Cover Sheet"
- .; ip address
+ .; ip address 
  .S $P(KMPDDATA,U,9)=$P($P(KMPDID,"-")," ",2)
  .; patient DFN
  .S $P(KMPDDATA,U,10)=$P(KMPDID,"-",3)
@@ -109,6 +112,6 @@ TRANSMIT ;
  ; send data via mail message.
  S XMTEXT="^KMPTMP(""KMPD"",""RDAT"","
  S XMSUB="CVLOAD DAILY DATA"
- S XMY("S.KMPD-ORWCV-SERVER@VISTA.CPE.DOMAIN.EXT")=""
+ S XMY(.5)="" ; *10003* ; was S XMY("S.KMPD-ORWCV-SERVER@VISTA.CPE.DOMAIN.EXT")=""
  D ^XMD
  Q
