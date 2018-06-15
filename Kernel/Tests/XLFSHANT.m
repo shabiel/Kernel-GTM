@@ -1,4 +1,4 @@
-XLFSHANT ; OSE/SMH - SHA secure hash routines tests ;2018-05-03  4:39 PM
+XLFSHANT ; OSE/SMH - SHA secure hash routines tests ;2018-06-12  3:08 PM
  ;;8.0;KERNEL;**10003**;Jul 10, 1995;Build 9
  ;=============================
  ;Tests
@@ -10,6 +10,7 @@ TEST I $T(^%ut)="" QUIT
  W $$CJ^XLFSTR("Testing w/ openssl plug-in",$G(IOM,80),"=")
  D EN^%ut($t(+0),3)
  n %utNoOpenssl s %utNoOpenssl=1
+ I +$SY=47,$ZV["Darwin" QUIT  ; Darwin doesn't have all the command line sha programs.
  W !!
  W $$CJ^XLFSTR("Testing s/ openssl plug-in",$G(IOM,80),"=")
  D EN^%ut($t(+0),3)
