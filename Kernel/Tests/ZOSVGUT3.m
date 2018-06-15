@@ -1,11 +1,11 @@
-ZOSVGUT3 ; VEN/SMH - Unit Tests for GT.M VistA Port;2018-04-16  11:59 AM
- ;;8.0;KERNEL;**10002**;;Build 11
+ZOSVGUT3 ; VEN/SMH - Unit Tests for GT.M VistA Port;2018-06-13  10:33 AM
+ ;;8.0;KERNEL;**10002**;;Build 25
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Authored by Sam Habiel 2017.
 STARTUP QUIT
  ;
 SHUTDOWN ; 
- S $ZSOURCE="ZOSVGUT3"
+ S $ZSOURCE="ZOSVGUT4"
  QUIT
  ;
 OPENH ; @TEST Read a Text File in w/ Handle
@@ -428,7 +428,7 @@ WGETSYNC ; @TEST $$WGETSYNC^%ZISH on NDF DAT files
  N % S %=$$LIST^%ZISH("/tmp/foo/boo","A","CURR")
  D CHKTF^%ut($D(CURR("PPS_2PRV_3NEW.DAT")))
  ;
- D CHKTF^%ut((SEC3-SEC2)<(SEC2-SEC1))
+ D CHKTF^%ut((SEC3-SEC2)'>(SEC2-SEC1))
  QUIT
  ;
 SEND ; @TEST Test SEND^%ZISH (NOOP)
@@ -447,3 +447,6 @@ DF ; @TEST Test DF^%ZISH (Directory Format)
  D CHKEQ^%ut(D,"/var/db/vista/")
  QUIT
  ;
+XTROU ;;
+ ;;ZOSVGUT4
+ ;;XLFSHANT
