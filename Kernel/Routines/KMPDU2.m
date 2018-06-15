@@ -1,4 +1,4 @@
-KMPDU2 ;OAK/RAK - CM Tools Routine Utilities ;2018-06-12  2:41 PM
+KMPDU2 ;OAK/RAK - CM Tools Routine Utilities ;2018-06-13  10:44 AM
  ;;3.0;KMPD;*10003*;Jan 22, 2009;Build 42
  ;
  ; *10003* Port to GT.M (c) Sam Habiel 2018
@@ -94,7 +94,7 @@ ROUINQ(KMPDY,KMPDROU) ;-- routine inquiry.
  ;
  S KMPDROU=$G(KMPDROU)
  I KMPDROU="" S KMPDY(0)="[Routine name not defined]" Q
- I '$$ROUNAME(KMPDROU) S @KMPDGBL@(0)="<"_KMPDROU_" contains invalid characters or is greater than 8 characters in length>" Q
+ I '$$ROUNAME(KMPDROU) S @KMPDGBL@(0)="<"_KMPDROU_" contains invalid characters or is greater than 16 characters in length>" Q  ; *10003 ; was 8
  .; was I '$D(^$ROUTINE(KMPDRNM)) S @KMPDGBL@(0)="<Routine "_KMPDRNM_" not defined>" Q ; 10003
  .I $T(^@KMPDROU)="" S @KMPDGBL@(0)="<Routine "_KMPDROU_" not defined>" Q  ; /*10003*/
  ;

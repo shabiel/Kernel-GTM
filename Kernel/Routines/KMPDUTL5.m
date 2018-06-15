@@ -1,4 +1,4 @@
-KMPDUTL5 ;OIFO/KAK - Obtain CPU Configuration;2018-06-11  2:45 PM;2/17/04  10:56
+KMPDUTL5 ;OIFO/KAK - Obtain CPU Configuration;2018-06-12  4:49 PM;2/17/04  10:56
  ;;3.0;KMPD;*10003*;Jan 22, 2009;Build 42
  ;
  ; *10003* changes by OSEHRA/Sam Habiel: GTM support
@@ -285,7 +285,7 @@ GTM(CPUINFO,TYP) ;-- for GT.M all versions *10003*
  ; Type is 1.
  N P
  I $ZV["Darwin" D  QUIT
- . S P(1)=$$RETURN^%ZOSV("sysctl -w machdep.cpu.vendor | cut -d':' -f2")
+ . S P(1)=$$RETURN^%ZOSV("sysctl -w machdep.cpu.brand_string | cut -d':' -f2")
  . S P(1)=$$TRIM^XLFSTR(P(1))
  . S P(2)=$$RETURN^%ZOSV("sysctl -w machdep.cpu.core_count | cut -d':' -f2")
  . S P(2)=$$TRIM^XLFSTR(P(2))
@@ -293,17 +293,17 @@ GTM(CPUINFO,TYP) ;-- for GT.M all versions *10003*
  . S P(3)=$$TRIM^XLFSTR(P(3))
  . S P(4)=$$RETURN^%ZOSV("sysctl -w hw.memsize | cut -d':' -f2")
  . S P(4)=$$TRIM^XLFSTR(P(4))
- . S CPUINFO(1)=P(1)_U_P(2)_U_P(3)_U_P(4)
+ . S CPUINFO($$RETURN^%ZOSV("hostname"))=P(1)_U_P(2)_U_P(3)_U_P(4)
  ;
  I $ZV["Linux"!($ZV["CYGWIN") D  QUIT
- . S P(1)=$$RETURN^%ZOSV("cat /proc/cpuinfo | grep vendor_id | uniq | cut -d':' -f2")
+ . S P(1)=$$RETURN^%ZOSV("cat /proc/cpuinfo | grep 'model name' | uniq | cut -d':' -f2")
  . S P(1)=$$TRIM^XLFSTR(P(1))
  . S P(2)=$$RETURN^%ZOSV("cat /proc/cpuinfo | grep processor | wc -l")
  . S P(3)=$$RETURN^%ZOSV("cat /proc/cpuinfo | grep 'cpu MHz' | uniq | cut -d':' -f2")
  . S P(3)=$$TRIM^XLFSTR(P(3))
  . S P(4)=$$RETURN^%ZOSV("cat /proc/meminfo | grep 'MemTotal' | cut -d':' -f2")
  . S P(4)=$$TRIM^XLFSTR(P(4))
- . S CPUINFO(1)=P(1)_U_P(2)_U_P(3)_U_P(4)
+ . S CPUINFO($$RETURN^%ZOSV("hostname"))=P(1)_U_P(2)_U_P(3)_U_P(4)
  ;
  ; Otherwise we don't have any information
  N NA S NA="n/a"

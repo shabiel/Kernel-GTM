@@ -1,4 +1,4 @@
-%ZOSVKR ;YDB/CJE&OSE/SMH - ZOSVKRG - Collect RUM Statistics for GT.M on Linux ;2018-06-12  1:39 PM
+%ZOSVKR ;YDB/CJE&OSE/SMH - ZOSVKRG - Collect RUM Statistics for GT.M on Linux ;2018-06-12  4:24 PM
  ;;8.0;KERNEL;**10003**;3/1/2018
  ;
  ; (c) Sam Habiel & Chirsopher Edwards 2018
@@ -66,11 +66,11 @@ EN ;
  ; KMPVCSTAT = current stats for this $job:  cpu^lines^commands^GloRefs^ElapsedTime
  S KMPVCSTAT=$$STATS()
  Q:KMPVCSTAT=""
+ ;
  ; ZHOROLOG format: days,seconds,microseconds,offset in seconds
  ; ZTIMESTAMP format: days,seconds.fractional-seconds
- ; TODO: determine if fromat translation is needed
- ; TODO: must add 4th piece to 2nd piece to get UTC!
- S $P(KMPVCSTAT,"^",5)=$ZHOROLOG
+ ; In the end, I settled on $ZUT, because it's easier to do time differences with this guy.
+ S $P(KMPVCSTAT,"^",5)=$ZUT
  ;
  ; KMPVPSTAT = previous stats for this $job
  S KMPVPSTAT=$G(KMPV("NOKILL",KMPVNODE,$J,"STATS"))
@@ -167,15 +167,5 @@ STATS() ;  return current stats for this $job
  Q KMPVRET
  ;
 ETIME(KMPVCUR,KMPVPREV) ;Calculate elapsed time for event
- N KMPVDAYS,KMPVETIME
- ; IF WITHIN SAME DAY
- S KMPVETIME=""
- I +KMPVCUR=+KMPVPREV D
- .S KMPVETIME=$P(KMPVCUR,",",2)-$P(KMPVPREV,",",2)
- ; IF OVER CHANGE OF DAY
- E  D
- .S KMPVETIME=$P(KMPVCUR,",",2)+(86400-$P(KMPVPREV,",",2))
- .; IN CASE RUNS OVER 2 DAY BOUNDARIES
- .S KMPVDAYS=(+KMPVCUR)-(+KMPVPREV)
- .I KMPVDAYS>1 S KMPVETIME=KMPVETIME+((KMPVDAYS-1)*86400)
- Q KMPVETIME
+ ; Based on $ZUT; returns in seconds as $ZUT is in microseconds
+ Q (KMPVCUR-KMPVPREV)/(10**6)
