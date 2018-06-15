@@ -1,5 +1,5 @@
-%ZOSV ;VEN/SMH,KRM/CJE,FIS/KSB - View commands & special functions. ;2018-02-26  1:05 PM
- ;;8.0;KERNEL;**275,425,499,10001,10002**;Jul 10, 1995;Build 18
+%ZOSV ;VEN/SMH,KRM/CJE,FIS/KSB - View commands & special functions. ;2018-06-13  4:26 PM
+ ;;8.0;KERNEL;**275,425,499,10001,10002,10003**;Jul 10, 1995;Build 25
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine authored by Department of Veterans Affairs
  ; Almost the entire routine was rewritten by Sam Habiel, Christopher Edwards, KS Bhaskar
@@ -18,13 +18,11 @@ ACTJ() ; # active jobs
  .. U IO C "FTOK" C "IPCS"
  . ;
  . I $$UP^XLFSTR($ZV)["DARWIN" D  ; OSEHRA/SMH - Should work on Linux too!
- .. N I,IO,LINE
- .. S IO=$IO
- .. ; Count number of processes returned by lsof accessing this database; and trim using xargs
- .. O "LSOF":(SHELL="/bin/sh":COMMAND="lsof -t "_$V("GVFILE","DEFAULT")_" | wc -l | xargs":READONLY)::"PIPE" U "LSOF"
- .. F  R LINE:1 Q:$ZEOF  Q:LINE
- .. S ^XUTL("XUSYS","CNT")=LINE
- .. U IO C "LSOF"
+ .. ; We previously used lsof against the default file, but that was TOOOOO SLOOOOW.
+ .. ; See https://apple.stackexchange.com/questions/81140/why-is-lsof-on-os-x-so-ridiculously-slow
+ .. ; Now we just do lsof against processes called mumps, and grep for the ones that have the default region open. xargs is used for trimming.
+ .. N %CMD S %CMD="pgrep mumps | xargs -n 1 -I{} lsof -p{} | grep "_$$DEFFILE_" | wc -l | xargs"
+ .. S ^XUTL("XUSYS","CNT")=$$RETURN^%ZOSV(%CMD)
  . ;
  . I $$UP^XLFSTR($ZV)["CYGWIN" D
  .. S ^XUTL("XUSYS","CNT")=+$$RETURN^%ZOSV("ps -as | grep mumps | grep -v grep | wc -l")
@@ -36,6 +34,12 @@ AVJ() ; # available jobs, Limit is in the OS.
  N V,J
  S V=^%ZOSF("VOL"),J=$O(^XTV(8989.3,1,4,"B",V,0)),J=$P($G(^XTV(8989.3,1,4,J,0),"^^1000"),"^",3)
  Q J-$$ACTJ ;Use signon Max
+ ;
+DEFFILE() ; Default Region File Name
+ Q $V("GVFILE",$$DEFREG)
+ ;
+DEFREG() ; Default Region Name
+ Q $VIEW("REGION","^DD") 
  ;
 RTNDIR() ; primary routine source directory
  N DIRS
