@@ -395,6 +395,7 @@ ZSY ; @TEST Run System Status
  N nProcs s nProcs=$$UNIXLSOF^ZSY()
  D HALTALL^ZSY ; Kill all other processes
  i $zv["arm" h 5 ; Needed for Arm chips... not fast enough in the kill
+ i $ZV["CYGWIN" h 5
  N nProcsAfter S nProcsAfter=$$UNIXLSOF^ZSY()
  D CHKTF^%ut(nProcs>nProcsAfter)
  D CHKTF^%ut(nProcsAfter=1)
