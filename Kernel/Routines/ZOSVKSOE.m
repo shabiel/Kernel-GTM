@@ -1,4 +1,4 @@
-%ZOSVKSE ;OAK/KAK/RAK/JML - ZOSVKSOE - Global data (Cache) ;9/1/2015
+%ZOSVKSE ;OAK/KAK/RAK/JML - ZOSVKSOE - Global data (Cache) ;2018-06-16
  ;;8.0;KERNEL;**90,94,197,268,456,568**;Jul 26, 2004;Build 48
  ;
  Q
@@ -126,6 +126,10 @@ ALLGLO ;- collect global info
  ..;
  ..; This does not make much sense...
  ..; Probably omit for GTM
+ ..; ^XTMP("KMPS",KMPSSITE,NUM,GLO,KMPSZU,KMPSDT,1)
+ ..; ^XTMP("KMPS",KMPSSITE,NUM,GLO,KMPSZU,KMPSDT,n)
+ ..; ^XTMP("KMPS",KMPSSITE,NUM,GLO,KMPSZU,KMPSDT,"D") ; Data
+ ..; ^XTMP("KMPS",KMPSSITE,NUM,GLO,KMPSZU,KMPSDT,"L") ; Long String
  ..I ($P(INFO,":")["Top Pointer Level")!($P(INFO,":")["Top/Bottom Pnt Level") D  Q
  ...S ^XTMP("KMPS",KMPSSITE,NUM,GLO,KMPSZU,KMPSDT,1)=BLK_"^"_EFF_"%^Pointer"
  ..I $P(INFO,":")["Pointer Level" D  Q
