@@ -1,5 +1,7 @@
-KMPVVSTM ;SP/JML - Collect Cache Metrics for the VistA Storage Monitor ;5/1/2017
- ;;4.0;CAPACITY MANAGEMENT;;3/1/2018
+KMPVVSTM ;SP/JML - Collect Metrics for the VistA Storage Monitor ;2018-07-20
+ ;;4.0;CAPACITY MANAGEMENT;*10003*;3/1/2018;Build 38
+ ; *10003* changed by OSE/SMH (c) Sam Habiel 2018
+ ; Licnesed under Apache 2.0.
  ;
  ;
  ;
@@ -15,7 +17,7 @@ RUN ; Collect metrics per configured interval and store in ^KMPTMP("KMPV","VSTM"
  ;    IF DATA MORE THAN 7 DAYS OLD SEND ERROR MESSAGE TO CPE GROUP AND DELETE DATA
  ;    IF DATA MORE THAN 1 DAY OLD SEND WARNING MESSAGE TO CPE GROUP AND SEND DATA
  ;    IF DATA 1 DAY OLD SEND DATA
- ;
+ ;    
  ;-----------------------------------------------------------------------
  ;
  N KMPVBPM,KMPVBSIZ,KMPVDATA,KMPVDB,KMPVDFSP,KMPVDIR,KMPVDNUM,KMPVEND,KMPVESIZ,KMPVFBLK,KMPVFLAG,KMPVFREE
@@ -24,20 +26,23 @@ RUN ; Collect metrics per configured interval and store in ^KMPTMP("KMPV","VSTM"
  D PURGEDLY^KMPVCBG("VSTM")
  ; Quit if monitor is not turned on
  Q:$$GETVAL^KMPVCCFG("VSTM","ONOFF",8969)'="ON"
+ ;
+ ; All below commented out in *10003*
  ; Check environment, quit if Test and test systems not allowed
- I $$PROD^KMPVCCFG()'="Prod",$$GETVAL^KMPVCCFG("VSTM","ALLOW TEST SYSTEM",8969,"I")'=1 Q
+ ; *10003*
+ ;I $$PROD^KMPVCCFG()'="Prod",$$GETVAL^KMPVCCFG("VSTM","ALLOW TEST SYSTEM",8969,"I")'=1 Q
  ; Only run if 15th or last day of the month
- S KMPVDNUM=$SYSTEM.SQL.DAYOFMONTH(+$H)
- S KMPVEND=$$LASTDAY()
+ ;S KMPVDNUM=$SYSTEM.SQL.DAYOFMONTH(+$H)
+ ;S KMPVEND=$$LASTDAY()
  ; SET KMPVTEST="TESTING" TO RUN TEST ON DAYS OTHER THAN THE 15TH OR LAST DAY OF MONTH
- I $G(KMPVTEST)="TESTING" S KMPVEND=1 K KMPVTEST
- W !,$G(KMPVTEST),!
- I (KMPVDNUM=15)!(KMPVEND) D
- .D KMPVVSTM^%ZOSVKSD(.KMPVDATA) ; IA 6342
- .D GETENV^%ZOSV S KMPVNODE=$P(Y,U,3)_":"_$P($P(Y,U,4),":",2) ;  IA 10097
- .S KMPVDIR=""
- .F  S KMPVDIR=$O(KMPVDATA(KMPVDIR)) Q:KMPVDIR=""  D
- ..S ^KMPTMP("KMPV","VSTM","DLY",+$H,KMPVNODE,KMPVDIR)=$G(KMPVDATA(KMPVDIR))
+ ;I $G(KMPVTEST)="TESTING" S KMPVEND=1 K KMPVTEST
+ ;W !,$G(KMPVTEST),!
+ ;I (KMPVDNUM=15)!(KMPVEND) D 
+ D KMPVVSTM^%ZOSVKSD(.KMPVDATA) ; IA 6342
+ D GETENV^%ZOSV S KMPVNODE=$P(Y,U,3)_":"_$P($P(Y,U,4),":",2) ;  IA 10097
+ S KMPVDIR=""
+ F  S KMPVDIR=$O(KMPVDATA(KMPVDIR)) Q:KMPVDIR=""  D
+ .S ^KMPTMP("KMPV","VSTM","DLY",+$H,KMPVNODE,KMPVDIR)=$G(KMPVDATA(KMPVDIR))
  Q
  ;
 LASTDAY() ; Return 1 if today is the last day of the month
