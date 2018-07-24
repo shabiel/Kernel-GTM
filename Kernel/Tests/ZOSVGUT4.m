@@ -1,4 +1,4 @@
-ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-06-13  4:08 PM
+ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-20
  ;;8.0;KERNEL;**10003**;;
  ; Submitted to OSEHRA in 2018 by Sam Habiel for OSEHRA
  ; (c) Sam Habiel 2018
@@ -13,6 +13,11 @@ SHUTDOWN ;
  S $ZSOURCE="ZOSVGUT4"
  QUIT
  ;
+PATCH ; @TEST $$PATCH^XPDUTL, which prv accepted only 3 digits
+ D CHKTF^%ut($$PATCH^XPDUTL("XU*8.0*10001"))
+ QUIT
+ ;
+ ; -- RUM --
 RUMSET ; @TEST ZTMGRSET RUM Rename GTM Routines
  D PATCH^ZTMGRSET(10003)
  D CHKTF^%ut($T(+2^%ZOSVKR)[10003)
@@ -46,10 +51,7 @@ LOGRSRC ; @TEST LOGRSRC^%ZOSV Resource Logger
  D CHKTF^%ut(FOUND)
  QUIT
  ;
-PATCH ; @TEST $$PATCH^XPDUTL, which prv accepted only 3 digits
- D CHKTF^%ut($$PATCH^XPDUTL("XU*8.0*10001"))
- QUIT
- ;
+ ; -- Capacity Management --
 SYSINFO ; @TEST $$SYSINFO^KMPDUTL1 System Information
  D CHKTF^%ut($$SYSINFO^KMPDUTL1()["GT.M")
  QUIT
@@ -85,4 +87,17 @@ ROUFIND ; @TEST ROUFIND^KMPDU2 Routine Find
  N CNT S CNT=0
  N I S I="" F  S I=$O(@GLOBAL@(I)) Q:I=""  S CNT=CNT+1
  D CHKTF^%ut(CNT>50)
+ QUIT
+ ;
+SAGG ; @TEST SAGG Data Collection -- TAKES A LONG TIME (40s on Cygwin)
+ D ^KMPSGE
+ D SUCCEED^%ut
+ QUIT
+ ;
+ ; -- VistA System Monitor Unit Tests --
+ ;
+KMPVVSTM ; @TEST VSM Section VSTM
+ K ^KMPTMP("KMPV","VSTM")
+ D RUN^KMPVVSTM
+ D CHKTF^%ut($data(^KMPTMP("KMPV","VSTM","DLY")))
  QUIT
