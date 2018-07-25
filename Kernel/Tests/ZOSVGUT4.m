@@ -1,4 +1,4 @@
-ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-20
+ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-24
  ;;8.0;KERNEL;**10003**;;
  ; Submitted to OSEHRA in 2018 by Sam Habiel for OSEHRA
  ; (c) Sam Habiel 2018
@@ -7,6 +7,21 @@ ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-20
  QUIT
  ;
 STARTUP ;
+ ;
+ ; Fix the email address to which messages are sent
+ N FDA,DIERR
+ N CNT S CNT=0
+ N ZOSVV F ZOSVV="VTCM","VSTM","VBEM","VMCM","VHLM" D
+ . S CNT=CNT+1
+ . S FDA(8969,"?+"_CNT_",",.01)=ZOSVV
+ . S FDA(8969,"?+"_CNT_",",.02)=1 ; ON/OFF
+ . S FDA(8969,"?+"_CNT_",",1.04)=1 ; Allow Test System?
+ . S FDA(8969,"?+"_CNT_",",3.01)="POSTMASTER"
+ . S FDA(8969,"?+"_CNT_",",3.02)="POSTMASTER"
+ . S FDA(8969,"?+"_CNT_",",3.03)="POSTMASTER"
+ . S FDA(8969,"?+"_CNT_",",3.04)="POSTMASTER"
+ D UPDATE^DIE("E","FDA")
+ I $D(DIERR) S $EC=",U1,"
  QUIT
  ;
 SHUTDOWN ; 
@@ -100,4 +115,34 @@ KMPVVSTM ; @TEST VSM Section VSTM
  K ^KMPTMP("KMPV","VSTM")
  D RUN^KMPVVSTM
  D CHKTF^%ut($data(^KMPTMP("KMPV","VSTM","DLY")))
+ D SEND^KMPVVSTM
+ D SUCCEED^%ut
+ QUIT
+ ;
+KMPVVBEM ; @TEST VSM Section VBEM
+ D ^KMPVBETR
+ D CHKTF^%ut($data(^KMPTMP("KMPV","VBEM","COMPRESS")))
+ QUIT
+ ;
+KMPVVHLM ; @TEST VSM Section VHLM
+ ; My test system has no HL7 messages on it; so no mail messages would get sent.
+ ; We will just be happy saying that we succeeded.
+ D ^KMPVVHLM
+ D SUCCEED^%ut
+ QUIT
+ ;
+KMPVVMCM ; @TEST VSM Section VMCM
+ ; This one runs perpetually. The only way to stop is it to turn it off in the file.
+ ; I do that; but I also want it to stop now; thus the HALTONE^ZSY.
+ J ^KMPVVMCM:(IN="/dev/null":OUT="/dev/null":ERROR="/dev/null")
+ N %J S %J=$ZJOB
+ D CHKTF^%ut($zgetjpi(%J,"isprocalive"))
+ N FDA
+ S FDA(8969,"?+1,",.01)="VMCM"
+ S FDA(8969,"?+1,",.02)=0 ; ON/OFF
+ D UPDATE^DIE("E","FDA")
+ H 1
+ D HALTONE^ZSY(%J)
+ D CHKTF^%ut($data(^KMPTMP("KMPV","VMCM","DLY")))
+ D SEND^KMPVVMCM
  QUIT
