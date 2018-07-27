@@ -88,8 +88,8 @@ KMPVVTCM(KMPVDATA) ; Get Cache metrics for Vista Timed Collection Monitor (VTCM)
  S KMPVTNS=$ZU(5,"%SYS")
  ;
  ; more $View commands
- S KMPVDATA("KMPVDASH")=##class(SYS.Stats.Dashboard).Sample() ;not used
- S KMPVDATA("KMPVROUT")=##class(SYS.Stats.Routine).Sample() ;not used
+ S KMPVDATA("KMPVDASH")=##class(SYS.Stats.Dashboard).Sample()
+ S KMPVDATA("KMPVROUT")=##class(SYS.Stats.Routine).Sample()
  S KMPVDATA("KMPVSMH")=##class(%SYSTEM.Config.SharedMemoryHeap).GetUsageSummary()
  S KMPVDATA("KMPVMEM")=##class(%SYSTEM.Config.SharedMemoryHeap).FreeCount()
  ;
