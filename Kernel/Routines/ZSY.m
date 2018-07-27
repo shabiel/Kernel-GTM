@@ -1,4 +1,4 @@
-ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-06-17
+ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-07-26
  ;;8.0;KERNEL;**349,10001,10002,10003**;Jul 10, 1995;Build 20
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine of unknown provenance -- was in unreleased VA patch XU*8.0*349 and thus perhaps in the public domain.
@@ -86,7 +86,7 @@ JOBEXAM(%ZPOS) ; [Public; Called by ^ZU]
  ; A -> Autorelink information
  ; C -> External programs that are loaded (presumable with D &)
  ; S -> Stack (use R instead)
- I $G(^XUTL("XUSYS",$J,"CMD"))="EXAM"!($P($G(^("CMD")),U)="DEBUG") ZSHOW "*":^XUTL("XUSYS",$J,"JE")
+ I $G(^XUTL("XUSYS",$J,"CMD"))="EXAM"!($P($G(^("CMD")),"^")="DEBUG") ZSHOW "*":^XUTL("XUSYS",$J,"JE")
  ;
  ; ^XUTL("XUSYS",8563,"JE","G",0)="GLD:*,REG:*,SET:25610,KIL:593,GET:12284,...
  ; Just grab the default region only. Decreases the stats as a side effect from this utility
