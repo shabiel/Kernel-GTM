@@ -1,4 +1,4 @@
-ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-24
+ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-27
  ;;8.0;KERNEL;**10003**;;
  ; Submitted to OSEHRA in 2018 by Sam Habiel for OSEHRA
  ; (c) Sam Habiel 2018
@@ -145,4 +145,12 @@ KMPVVMCM ; @TEST VSM Section VMCM
  D HALTONE^ZSY(%J)
  D CHKTF^%ut($data(^KMPTMP("KMPV","VMCM","DLY")))
  D SEND^KMPVVMCM
+ QUIT
+ ;
+KMPVVTCM ; @TEST Timed Collection Monitor
+ N ZZZ,YYY
+ D KMPVVTCM^%ZOSVKSD(.ZZZ)
+ D CHKTF^%ut(ZZZ("KMPVDASH","CacheEfficiency"))
+ D BLKCOL^%ZOSVKSD(.YYY)
+ D CHKTF^%ut(YYY)
  QUIT
