@@ -1,4 +1,4 @@
-ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-27
+ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-31
  ;;8.0;KERNEL;**10003**;;
  ; Submitted to OSEHRA in 2018 by Sam Habiel for OSEHRA
  ; (c) Sam Habiel 2018
@@ -66,6 +66,17 @@ LOGRSRC ; @TEST LOGRSRC^%ZOSV Resource Logger
  D CHKTF^%ut(FOUND)
  QUIT
  ;
+ ; -- EC^%ZOSV fix --
+ ; 
+EC ; @TEST $$EC^%ZOSV
+ N EC
+ N V S V=$name(^PS(222,333,444,555,666,777,888))
+ D
+ . N $ET,$ES S $ET="S EC=$$EC^%ZOSV,$EC="""" D UNWIND^ZU"
+ . I @V
+ D CHKTF^%ut($P(EC,",",4)["GVUNDEF")
+ QUIT
+ ;
  ; -- Capacity Management --
 SYSINFO ; @TEST $$SYSINFO^KMPDUTL1 System Information
  D CHKTF^%ut($$SYSINFO^KMPDUTL1()["GT.M")
@@ -104,7 +115,7 @@ ROUFIND ; @TEST ROUFIND^KMPDU2 Routine Find
  D CHKTF^%ut(CNT>50)
  QUIT
  ;
-SAGG ; @TEST SAGG Data Collection -- TAKES A LONG TIME (40s on Cygwin)
+SAGG ; #TEST SAGG Data Collection -- TAKES A LONG TIME (40s on Cygwin)
  D ^KMPSGE
  D SUCCEED^%ut
  QUIT

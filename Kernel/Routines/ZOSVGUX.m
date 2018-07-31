@@ -1,4 +1,4 @@
-%ZOSV ;VEN/SMH,KRM/CJE,FIS/KSB - View commands & special functions. ;2018-06-13  4:26 PM
+%ZOSV ;VEN/SMH,KRM/CJE,FIS/KSB - View commands & special functions. ;2018-07-31
  ;;8.0;KERNEL;**275,425,499,10001,10002,10003**;Jul 10, 1995;Build 25
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine authored by Department of Veterans Affairs
@@ -142,9 +142,10 @@ LGR() ; Last global reference ($REFERENCE)
  Q $R
  ;
 EC() ; Error Code: returning $ZS in format more like $ZE from DSM
+ ; NB: Updated in patch *10003* to deal with multiple commas (as in global references)
  N %ZE
- I $ZS="" S %ZE=""
- S %ZE=$P($ZS,",",2)_","_$P($ZS,",",4)_","_$P($ZS,",")_",-"_$P($ZS,",",3)
+ I $ZS="" Q ""
+ S %ZE=$P($ZS,",",2)_","_$TR($P($ZS,",",4,999),",","'")_","_$P($ZS,",")_",-"_$P($ZS,",",3)
  Q %ZE
  ;
 DOLRO ;SAVE ENTIRE SYMBOL TABLE IN LOCATION SPECIFIED BY X
