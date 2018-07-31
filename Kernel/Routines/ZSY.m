@@ -1,4 +1,4 @@
-ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-07-26
+ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-07-30
  ;;8.0;KERNEL;**349,10001,10002,10003**;Jul 10, 1995;Build 20
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine of unknown provenance -- was in unreleased VA patch XU*8.0*349 and thus perhaps in the public domain.
@@ -120,13 +120,33 @@ JOBEXAM(%ZPOS) ; [Public; Called by ^ZU]
  ; Done. We can tell others we are ready
  SET ^XUTL("XUSYS",$J,"JE","COMPLETE")=1
  ;
- ; TODO: IMPLEMENT DEBUG
- I $P($G(^XUTL("XUSYS",$J,"CMD")),"^")="DEBUG" QUIT  ; **NOT IMPLEMENTED**
+ I $P($G(^XUTL("XUSYS",$J,"CMD")),"^")="DEBUG" DO
+ . ; Open local socket
+ . N TCPIO S TCPIO="SCK$LOCAL"
+ . O TCPIO:(CONNECT="/tmp/ydb-debug-socket:local":delim=$C(4):attach="client"):15:"socket"
+ . U TCPIO
+ . ; Connect to Debug Server
+ . W "$CONNECT",$C(4)
+ . S $ZSTEP="D ZSTEP^ZSY"
+ . ZSTEP INTO
+DEBUGME . ; [Debug entry point]
+ . 
  ;
  ; Restore old IO and $R
  U OLDIO
  I %reference
  Q 1
+ ;
+ZSTEP ; Wait for commands
+ K ^ZZSAM
+ F  R X  S ^ZZSAM($I(^ZZSAM))=X D  I $E(X,1,2)="ZC" QUIT
+ . I $E(X,1,2)="ZC" QUIT
+ . N $ET,$ES S $ET="S $EC="""" W $C(4)"
+ . X X
+ . W $C(4)
+ . B
+ C TCPIO
+ QUIT
  ;
 WORK(MODE,FILTER) ; [Private] Main driver, Will release lock
  ; int MODE
@@ -617,6 +637,13 @@ LOADST ; [Private] Load the symbol table into the current process
  ;
 DEBUG(%J) ; [Private] Debugging logic
  Q:'$ZGETJPI(%J,"isprocalive") -1
+ ;
+ N TCPIO S TCPIO="SCK$LOCAL"
+ O TCPIO:(LISTEN="/tmp/ydb-debug-socket:local":delim=$C(4):attach="server":newversion):15:"socket"
+ U TCPIO
+ ;
+ W /LISTEN(1)
+ ;
  K ^XUTL("XUSYS",%J,"CMD"),^("JE")
  S ^XUTL("XUSYS",%J,"CMD")="DEBUG"
  D INTRPT(%J)
@@ -624,7 +651,10 @@ DEBUG(%J) ; [Private] Debugging logic
  I '$G(^XUTL("XUSYS",%J,"JE","COMPLETE")) H .2
  I '$G(^XUTL("XUSYS",%J,"JE","COMPLETE")) H .1
  I '$G(^XUTL("XUSYS",%J,"JE","COMPLETE")) Q -1
- N ZSY M ZSY=^XUTL("XUSYS",%J)
+ ;
+ F  W /WAIT(10) Q:$KEY]""
+ R X
+ B
  ;
  N BOLD S BOLD=$C(27,91,49,109)
  N RESET S RESET=$C(27,91,109)
@@ -660,7 +690,7 @@ DEBUG(%J) ; [Private] Debugging logic
  N B F B=0:0 S B=$O(ZSY("JE","B",B)) Q:'B  W ZSY("JE","B",B),!
  ;
  n x r "press key to continue",x
- QUIT
+ QUIT 0
  ;
 AUTOMARG() ;RETURNS IOM^IOSL IF IT CAN and resets terminal to those dimensions; GT.M
  ; ZEXCEPT: APC,TERM,NOECHO,WIDTH
