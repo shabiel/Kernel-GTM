@@ -1,4 +1,4 @@
-%ZOSVKR ;YDB/CJE&OSE/SMH - ZOSVKRG - Collect RUM Statistics for GT.M on Linux ;2018-06-12  4:24 PM
+%ZOSVKR ;YDB/CJE&OSE/SMH - ZOSVKRG - Collect RUM Statistics for GT.M on Linux ;2018-08-01
  ;;8.0;KERNEL;**10003**;3/1/2018
  ;
  ; (c) Sam Habiel & Chirsopher Edwards 2018
@@ -137,7 +137,7 @@ STATS() ;  return current stats for this $job
  ; global references
  N GLOSTAT
  ZSHOW "G":GLOSTAT
- N I F I=0:0 S I=$O(GLOSTAT("G",I)) Q:'I  I GLOSTAT("G",I)[$ZGLD,GLOSTAT("G",I)["DEFAULT" S GLOSTAT=GLOSTAT("G",I)
+ N I F I=0:0 S I=$O(GLOSTAT("G",I)) Q:'I  I GLOSTAT("G",I)[$ZGLD,GLOSTAT("G",I)[$$DEFREG^%ZOSV S GLOSTAT=GLOSTAT("G",I)
  I GLOSTAT]"" N I F I=1:1:$L(GLOSTAT,",") D
  .N EACHSTAT S EACHSTAT=$P(GLOSTAT,",",I)
  .N SUB,OBJ S SUB=$P(EACHSTAT,":"),OBJ=$P(EACHSTAT,":",2)

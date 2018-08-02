@@ -1,4 +1,4 @@
-%ZOSV ;VEN/SMH,KRM/CJE,FIS/KSB - View commands & special functions. ;2018-07-31
+%ZOSV ;VEN/SMH,KRM/CJE,FIS/KSB - View commands & special functions. ;2018-08-01
  ;;8.0;KERNEL;**275,425,499,10001,10002,10003**;Jul 10, 1995;Build 25
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine authored by Department of Veterans Affairs
@@ -6,12 +6,12 @@
  ;
 ACTJ() ; # active jobs
  ; Next call active as of 6.3
- I $T(^%PEEKBYNAME)]"" Q $$^%PEEKBYNAME("node_local.ref_cnt","DEFAULT")
+ I $T(^%PEEKBYNAME)]"" Q $$^%PEEKBYNAME("node_local.ref_cnt",$$DEFREG)
  I ($G(^XUTL("XUSYS","CNT"))<1)!($G(^XUTL("XUSYS","CNT","SEC"))>($$SEC^XLFDT($H)+3600)) D
  . I $$UP^XLFSTR($ZV)["LINUX" D
  .. N I,IO,LINE
  .. S IO=$IO
- .. O "FTOK":(SHELL="/bin/sh":COMMAND="$gtm_dist/mupip ftok "_$V("GVFILE","DEFAULT"):READONLY)::"PIPE" U "FTOK"
+ .. O "FTOK":(SHELL="/bin/sh":COMMAND="$gtm_dist/mupip ftok "_$$DEFFILE:READONLY)::"PIPE" U "FTOK"
  .. F I=1:1:3 R LINE
  .. O "IPCS":(SHELL="/bin/sh":COMMAND="ipcs -mi "_$TR($P($P(LINE,"::",3),"[",1)," ",""):READONLY)::"PIPE" U "IPCS"
  .. F I=1:1 R LINE Q:$ZEO  I 1<$L(LINE,"nattch=") S ^XUTL("XUSYS","CNT")=+$P(LINE,"nattch=",2) Q
@@ -35,10 +35,10 @@ AVJ() ; # available jobs, Limit is in the OS.
  S V=^%ZOSF("VOL"),J=$O(^XTV(8989.3,1,4,"B",V,0)),J=$P($G(^XTV(8989.3,1,4,J,0),"^^1000"),"^",3)
  Q J-$$ACTJ ;Use signon Max
  ;
-DEFFILE() ; Default Region File Name
+DEFFILE() ; Default Region File Name ; *10003*
  Q $V("GVFILE",$$DEFREG)
  ;
-DEFREG() ; Default Region Name
+DEFREG() ; Default Region Name; *10003*
  Q $VIEW("REGION","^DD") 
  ;
 RTNDIR() ; primary routine source directory

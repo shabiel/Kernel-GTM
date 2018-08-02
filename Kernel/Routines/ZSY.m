@@ -91,7 +91,7 @@ JOBEXAM(%ZPOS) ; [Public; Called by ^ZU]
  ; ^XUTL("XUSYS",8563,"JE","G",0)="GLD:*,REG:*,SET:25610,KIL:593,GET:12284,...
  ; Just grab the default region only. Decreases the stats as a side effect from this utility
  N GLOSTAT
- N I F I=0:0 S I=$O(^XUTL("XUSYS",$J,"JE","G",I)) Q:'I  I ^(I)[$ZGLD,^(I)["DEFAULT" S GLOSTAT=^(I)
+ N I F I=0:0 S I=$O(^XUTL("XUSYS",$J,"JE","G",I)) Q:'I  I ^(I)[$ZGLD,^(I)[$$DEFREG() S GLOSTAT=^(I)
  I GLOSTAT]"" N I F I=1:1:$L(GLOSTAT,",") D
  . N EACHSTAT S EACHSTAT=$P(GLOSTAT,",",I)
  . N SUB,OBJ S SUB=$P(EACHSTAT,":"),OBJ=$P(EACHSTAT,":",2)
@@ -655,6 +655,9 @@ DEBUG(%J) ; [Private] Debugging logic
  B
  ;
  QUIT 0
+ ;
+DEFREG() ; Default Region Name; *10003*
+ Q $VIEW("REGION","^DD")
  ;
 AUTOMARG() ;RETURNS IOM^IOSL IF IT CAN and resets terminal to those dimensions; GT.M
  ; ZEXCEPT: APC,TERM,NOECHO,WIDTH
