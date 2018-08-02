@@ -1,4 +1,4 @@
-ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-07-30
+ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-08-02
  ;;8.0;KERNEL;**349,10001,10002,10003**;Jul 10, 1995;Build 20
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine of unknown provenance -- was in unreleased VA patch XU*8.0*349 and thus perhaps in the public domain.
@@ -129,8 +129,6 @@ JOBEXAM(%ZPOS) ; [Public; Called by ^ZU]
  . W "$CONNECT",$C(4)
  . S $ZSTEP="D ZSTEP^ZSY"
  . ZSTEP INTO
-DEBUGME . ; [Debug entry point]
- . 
  ;
  ; Restore old IO and $R
  U OLDIO
@@ -656,40 +654,6 @@ DEBUG(%J) ; [Private] Debugging logic
  R X
  B
  ;
- N BOLD S BOLD=$C(27,91,49,109)
- N RESET S RESET=$C(27,91,109)
- N UNDER S UNDER=$C(27,91,52,109)
- N DIM S DIM=$$AUTOMARG()
- ;
- ; Normal Display: Job Info, Stack, Locks, Devices
- W #
- W UNDER,"JOB INFORMATION FOR "_%J," (",$ZDATE(ZSY(0),"YYYY-MON-DD 24:60:SS"),")",RESET,!
- W BOLD,"AT: ",RESET,ZSY("JE","INTERRUPT"),": ",ZSY("JE","codeline"),!!
- ;
- N CNT S CNT=1
- W BOLD,"Stack: ",RESET,!
- ; Stack is funny -- print just to $ZINTERRUPT
- N S F S=$O(ZSY("JE","R"," "),-1):-1:1 Q:ZSY("JE","R",S)["$ZINTERRUPT"  D
- . N PLACE S PLACE=$P(ZSY("JE","R",S),":")
- . I $E(PLACE)=" " QUIT  ; GTM adds an extra level sometimes for display -- messes me up
- . W CNT,". "
- . I PLACE'["GTM$DMOD" W PLACE,?40,$T(@PLACE)
- . W !
- . S CNT=CNT+1
- W CNT,". ",ZSY("JE","INTERRUPT"),":",?40,ZSY("JE","codeline"),!
- ;
- W !
- W BOLD,"Locks: ",RESET,!
- N L F L=0:0 S L=$O(ZSY("JE","L",L)) Q:'L  W ZSY("JE","L",L),!
- ;
- W !
- W BOLD,"Devices: ",RESET,!
- N D F D=0:0 S D=$O(ZSY("JE","D",D)) Q:'D  W ZSY("JE","D",D),!
- W !
- W BOLD,"Breakpoints: ",RESET,!
- N B F B=0:0 S B=$O(ZSY("JE","B",B)) Q:'B  W ZSY("JE","B",B),!
- ;
- n x r "press key to continue",x
  QUIT 0
  ;
 AUTOMARG() ;RETURNS IOM^IOSL IF IT CAN and resets terminal to those dimensions; GT.M
