@@ -1,4 +1,4 @@
-ZOSVGUT3 ; VEN/SMH - Unit Tests for GT.M VistA Port;2018-06-13  10:33 AM
+ZOSVGUT3 ; VEN/SMH - Unit Tests for GT.M VistA Port;2018-08-02
  ;;8.0;KERNEL;**10002**;;Build 25
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Authored by Sam Habiel 2017.
@@ -396,8 +396,7 @@ SIZE ; @TEST $$SIZE^%ZISH
  QUIT
  ;
 MKDIR ; @TEST $$MKDIR^%ZISH
- N % S %=$$RETURN^%ZOSV("rm -r /tmp/foo/boo",1)
- D CHKTF^%ut(%=0)
+ N % S %=$$RETURN^%ZOSV("rm -r /tmp/foo/boo",1) ; Issue #15: Don't check for failure as it may not exist
  N % S %=$$MKDIR^%ZISH("/tmp/foo/boo")
  D CHKTF^%ut(%=0)
  N % S %=$$RETURN^%ZOSV("stat /tmp/foo/boo",1)
