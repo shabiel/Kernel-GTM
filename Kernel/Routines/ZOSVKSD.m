@@ -1,4 +1,4 @@
-%ZOSVKSD ;OAK/KAK/RAK/JML - ZOSVKSD - Calculate Disk Capacity ;7/25/2004
+%ZOSVKSD ;OAK/KAK/RAK/JML - ZOSVKSD - Calculate Disk Capacity ;Aug 02, 2018@11:12
  ;;8.0;KERNEL;**121,197,268,456,568,670**;3/1/2018
  ;
  ; This routine will help to calculate disk capacity for
@@ -95,7 +95,35 @@ KMPVVTCM(KMPVDATA) ; Get Cache metrics for Vista Timed Collection Monitor (VTCM)
  ;
  ; Return to 'from' namespace
  S KMPVTNS=$ZU(5,KMPVRNS)
- Q
+ ;
+ ; Save the stats for the caller
+ N KMPVDASH S KMPVDASH=KMPVDATA("KMPVDASH")
+ S KMPVDASH("GloRefs")=KMPVDASH.GloRefs
+ S KMPVDASH("GloRefsPerSec")=KMPVDASH.GloRefsPerSec
+ S KMPVDASH("GloSets")=KMPVDASH.GloSets
+ S KMPVDASH("LogicalReads")=KMPVDASH.LogicalReads
+ S KMPVDASH("DiskReads")=KMPVDASH.DiskReads
+ S KMPVDASH("DiskWrites")=KMPVDASH.DiskWrites
+ S KMPVDASH("Processes")=KMPVDASH.Processes
+ ;
+ N KMPVROUT S KMPVROUT=KMPVDATA("KMPVROUT")
+ S KMPVROUT("RtnCommands")=KMPVROUT.RtnCommands
+ S KMPVROUT("RtnLines")=KMPVROUT.RtnLines
+ S KMPVDASH("RouRefs")=KMPVDASH.RouRefs ; *KMPVDASH is intended and not a mistake
+ ;
+ ; ISM Only stuff
+ S KMPVDASH("CSPSessions")=KMPVDASH.CSPSessions
+ S KMPVDASH("ECPAppSrvRate")=KMPVDASH.ECPAppSrvRate
+ S KMPVDASH("ECPDataSrvRate")=KMPVDASH.ECPDataSrvRate
+ ;
+ S KMPVDASH("CacheEfficiency")=KMPVDASH.CacheEfficiency
+ ;
+ S KMPVDASH("JournalEntries")=KMPVDASH.JournalEntries
+ S KMPVDASH("ApplicationErrors")=KMPVDASH.ApplicationErrors
+ ;
+ M KMPVDATA("KMPVDASH")=KMPVDASH
+ M KMPVDATA("KMPVROUT")=KMPVROUT
+ QUIT
  ;
 BLKCOL(KMPVRET) ;
  ; ** Non interactive subset of Intersystems' ^BLKCOL routine - includes parts of BLKCOL and RUNERR line tags

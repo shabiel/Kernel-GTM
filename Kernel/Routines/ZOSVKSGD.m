@@ -1,4 +1,4 @@
-%ZOSVKSD ; OSE/SMH - ZOSVKSD for GT.M - Disk, VSTM, and VTCM ;2018-07-26
+%ZOSVKSD ; OSE/SMH - ZOSVKSD for GT.M - Disk, VSTM, and VTCM ;Aug 02, 2018@11:25
  ;;8.0;KERNEL;**10003**;3/1/2018
  ;
 EN(SITENUM,SESSNUM,OS) ;-- called by routine SYS+2^KMPSLK
@@ -116,7 +116,8 @@ KMPVVTCM(KMPVDATA) ; Get metrics for Vista Timed Collection Monitor (VTCM) withi
  S KMPVDASH("GloSets")=SET
  S KMPVDASH("LogicalReads")=NBR+TBR
  S KMPVDASH("DiskReads")=DRD
- S KMPVDASH("DiskWrites")=DWT S KMPVDASH("Processes")=$$UNIXLSOF^ZSY()
+ S KMPVDASH("DiskWrites")=DWT
+ S KMPVDASH("Processes")=$$UNIXLSOF^ZSY()
  ;
  ; No routine stats avail in GTM
  N KMPVROUT
@@ -134,20 +135,20 @@ KMPVVTCM(KMPVDATA) ; Get metrics for Vista Timed Collection Monitor (VTCM) withi
  S KMPVDASH("CacheEfficiency")=(SET+DTA+GET+ORD+ZPR+QRY)/DRD
  ;
  S KMPVDASH("JournalEntries")=JRL
- S KMPVDASH("ApplicationErrors")=0 ; has no meaning in GT.M
+ S KMPVDASH("ApplicationErrors")="n/a" ; has no meaning in GT.M
  ;
  ; Shared memory stuff
- N KMPVSHM
- S KMPVSHM("TotalSHMMemUsed")=$$SHMUSED()
- S KMPVSHM("TotalSMHPagesUsed")="n/a" ; Doesn't have meaning in Linux; no need to collect
- S KMPVSHM("ConfiguredSHMMemory")=$$SHMALL()
- S KMPVSHM=KMPVSHM("TotalSHMMemUsed")_","_KMPVSHM("TotalSMHPagesUsed")_","_KMPVSHM("ConfiguredSHMMemory")
+ N KMPVSMH
+ S KMPVSMH("TotalSHMMemUsed")=$$SHMUSED()
+ S KMPVSMH("TotalSMHPagesUsed")="n/a" ; Doesn't have meaning in Linux--only on BSD; no need to collect
+ S KMPVSMH("ConfiguredSHMMemory")=$$SHMALL()
+ S KMPVSMH=KMPVSMH("TotalSHMMemUsed")_","_KMPVSMH("TotalSMHPagesUsed")_","_KMPVSMH("ConfiguredSHMMemory")
  ;
  S KMPVMEM="n/a,n/a,n/a,n/a"
  ;
  M KMPVDATA("KMPVDASH")=KMPVDASH
  M KMPVDATA("KMPVROUT")=KMPVROUT
- M KMPVDATA("KMPVSHM")=KMPVSHM
+ M KMPVDATA("KMPVSMH")=KMPVSMH
  M KMPVDATA("KMPVMEM")=KMPVMEM
  QUIT
  ;
