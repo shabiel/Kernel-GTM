@@ -1,6 +1,7 @@
-KMPVCBG ;SP/JML VSM background utility functions ;5/1/2017
- ;;4.0;CAPACITY MANAGEMENT;;3/1/2018
+KMPVCBG ;SP/JML VSM background utility functions ;Aug 03, 2018@17:39
+ ;;4.0;CAPACITY MANAGEMENT;*10003*;3/1/2018;Build 38
  ;
+ ; *10003* Changes by Sam Habiel (c) Sam Habiel 2018
  ;
 MONLIST(KMPVML) ; Return list of configured Monitors
  K KMPVML
@@ -45,7 +46,7 @@ STARTMON(KMPVMKEY,KMPVAUTO) ; Schedule transmission task in TaskMan and set ONOF
  .S KMPVSTAT=$$SETONE^KMPVCCFG(KMPVMKEY,"ONOFF","ON",.KMPVEARR)
  .; If VBEM set ^%ZTSCH("LOGRSRC")=1
  .I KMPVSTAT=0,KMPVMKEY="VBEM" S DIE=8989.3,DA=1,DR="300///YES" D ^DIE
- .; schedule background job
+ .; schedule background job 
  .D RESCH^XUTMOPT(KMPVOPT,KMPVSTRT,,KMPVRFREQ,"L",.KMPVERROR)
  .I $G(KMPVERROR)=-1 D  Q
  ..S KMPVSTAT=$$SETONE^KMPVCCFG(KMPVMKEY,"ONOFF","OFF",.KMPVEARR)
@@ -201,6 +202,8 @@ PURGEDLY(KMPVMKEY) ; Purge any data older than VSM CONFIURATION file specifies
 KMPVTSK(KMPVNSP) ; CHECK CREATE OR RESUME KMPVRUN TASK IN CACHE TASKMGR
  N I,KMPVMSG,KMPVNSPE,KMPVROLS,KMPVTASK,KMPVTFLG,KMPVTSK,KMPVTSKS
  ;
+ I +$SY=47 D GTMTSK QUIT  ; *10003* GTM Support
+ ;
  ; Start: only in KMPVCBG version - comment out for ZSTU
  S KMPVROLS=$ROLES
  I (KMPVROLS'["%All")&(KMPVROLS'["%Manager") D  Q
@@ -269,3 +272,11 @@ KMPVTSK(KMPVNSP) ; CHECK CREATE OR RESUME KMPVRUN TASK IN CACHE TASKMGR
  .W !,KMPVMSG DO ##class(%SYS.System).WriteToConsoleLog("ZSTU: "_KMPVMSG,0,0)
  Q
  ;
+GTMTSK ; [Private] GTM Task support
+ W !
+ W "GT.M/YDB SUPPORT",!!
+ W "For the VistA system monitor to work, you need to run a cron job every night",!
+ W "The cron job needs to source environment variables and then run RUN^KMPVRUN",!
+ W "Here's an example crontab: ",!
+ W "10 0 * * * . /var/db/foia201805/env.vista; mumps -r RUN^KMPVRUN",!
+ QUIT
