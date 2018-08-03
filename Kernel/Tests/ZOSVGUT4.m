@@ -1,4 +1,4 @@
-ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;2018-07-31
+ZOSVGUT4 ; OSE/SMH - Unit Tests for GT.M VistA Port;Aug 02, 2018@15:04
  ;;8.0;KERNEL;**10003**;;
  ; Submitted to OSEHRA in 2018 by Sam Habiel for OSEHRA
  ; (c) Sam Habiel 2018
@@ -22,6 +22,7 @@ STARTUP ;
  . S FDA(8969,"?+"_CNT_",",3.04)="POSTMASTER"
  D UPDATE^DIE("E","FDA")
  I $D(DIERR) S $EC=",U1,"
+ F ZOSVV="VTCM","VSTM","VBEM","VMCM","VHLM" D STARTMON^KMPVCBG(ZOSVV,1)
  QUIT
  ;
 SHUTDOWN ; 
@@ -115,14 +116,14 @@ ROUFIND ; @TEST ROUFIND^KMPDU2 Routine Find
  D CHKTF^%ut(CNT>50)
  QUIT
  ;
-SAGG ; #TEST SAGG Data Collection -- TAKES A LONG TIME (40s on Cygwin)
+SAGG ; @TEST SAGG Data Collection -- TAKES A LONG TIME (40s on Cygwin)
  D ^KMPSGE
  D SUCCEED^%ut
  QUIT
  ;
  ; -- VistA System Monitor Unit Tests --
  ;
-KMPVVSTM ; @TEST VSM Section VSTM
+VSTM ; @TEST VSM Storage Monitor
  K ^KMPTMP("KMPV","VSTM")
  D RUN^KMPVVSTM
  D CHKTF^%ut($data(^KMPTMP("KMPV","VSTM","DLY")))
@@ -130,38 +131,48 @@ KMPVVSTM ; @TEST VSM Section VSTM
  D SUCCEED^%ut
  QUIT
  ;
-KMPVVBEM ; @TEST VSM Section VBEM
+VBEM ; @TEST VSM Business Event Monitor (replaces old CM task)
  D ^KMPVBETR
  D CHKTF^%ut($data(^KMPTMP("KMPV","VBEM","COMPRESS")))
  QUIT
  ;
-KMPVVHLM ; @TEST VSM Section VHLM
+VHLM ; @TEST VSM Section HL7 mointor
  ; My test system has no HL7 messages on it; so no mail messages would get sent.
  ; We will just be happy saying that we succeeded.
  D ^KMPVVHLM
  D SUCCEED^%ut
  QUIT
  ;
-KMPVVMCM ; @TEST VSM Section VMCM
+VMCM ; @TEST VSM Message Count Monitor
  ; This one runs perpetually. The only way to stop is it to turn it off in the file.
  ; I do that; but I also want it to stop now; thus the HALTONE^ZSY.
  J ^KMPVVMCM:(IN="/dev/null":OUT="/dev/null":ERROR="/dev/null")
  N %J S %J=$ZJOB
  D CHKTF^%ut($zgetjpi(%J,"isprocalive"))
- N FDA
- S FDA(8969,"?+1,",.01)="VMCM"
- S FDA(8969,"?+1,",.02)=0 ; ON/OFF
- D UPDATE^DIE("E","FDA")
- H 1
+ D STOPMON^KMPVCBG("VMCM",1)
  D HALTONE^ZSY(%J)
- D CHKTF^%ut($data(^KMPTMP("KMPV","VMCM","DLY")))
+ F  Q:'$zgetjpi(%J,"isprocalive")  H .001 ; Wait around til shi
+ D CHKTF^%ut($data(^KMPTMP("KMPV","VMCM","DLY",+$H)))
  D SEND^KMPVVMCM
  QUIT
  ;
-KMPVVTCM ; @TEST Timed Collection Monitor
- N ZZZ,YYY
- D KMPVVTCM^%ZOSVKSD(.ZZZ)
- D CHKTF^%ut(ZZZ("KMPVDASH","CacheEfficiency"))
- D BLKCOL^%ZOSVKSD(.YYY)
- D CHKTF^%ut(YYY)
+VTCM ; @TEST VSM Timed Collection Monitor
+ ; This one runs perpetually. The only way to stop is it to turn it off in the file.
+ ; I do that; but I also want it to stop now; thus the HALTONE^ZSY.
+ J ^KMPVVTCM:(IN="/dev/null":OUT="/dev/null":ERROR="/dev/null")
+ N %J S %J=$ZJOB
+ D CHKTF^%ut($zgetjpi(%J,"isprocalive"))
+ D STOPMON^KMPVCBG("VTCM",1)
+ D HALTONE^ZSY(%J)
+ F  Q:'$zgetjpi(%J,"isprocalive")  H .001 ; Wait around til shi
+ D CHKTF^%ut($data(^KMPTMP("KMPV","VTCM","DLY",+$H)))
+ D SEND^KMPVVTCM
+ QUIT
+ ;
+TASK ; @TEST Task Creator
+ ; This just prints a message rather than crash
+ N IOP,POP S IOP="NULL" D ^%ZIS U IO
+ D KMPVTSK^KMPVCBG
+ D ^%ZISC
+ D SUCCEED^%ut
  QUIT
