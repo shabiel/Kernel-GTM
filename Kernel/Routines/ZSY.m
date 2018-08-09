@@ -1,4 +1,4 @@
-ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-08-02
+ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;8월 09, 2018@09:19
  ;;8.0;KERNEL;**349,10001,10002,10003**;Jul 10, 1995;Build 20
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine of unknown provenance -- was in unreleased VA patch XU*8.0*349 and thus perhaps in the public domain.
@@ -425,9 +425,9 @@ VPE(%OLDSTR,%OLDDEL,%NEWDEL) ; $PIECE extract based on variable length delimiter
 UNIXLSOF(procs) ; [Public] - Get all processes accessing THIS database (only!)
  ; (return) .procs(n)=unix process number
  ; ZEXCEPT: shell,parse
- n %cmd s %cmd="lsof -t "_$$DEFFILE^%ZOSV
+ n %cmd s %cmd="lsof -t "_$$DEFFILE
  i $ZV["CYGWIN" s %cmd="ps -a | grep mumps | grep -v grep | awk '{print $1}'"
- i $ZV["Darwin" s %cmd="pgrep mumps | xargs -n 1 -I{} lsof -p{} | grep "_$$DEFFILE^%ZOSV_" | awk '{print $2}'"
+ i $ZV["Darwin" s %cmd="pgrep mumps | xargs -n 1 -I{} lsof -p{} | grep "_$$DEFFILE_" | awk '{print $2}'"
  n oldio s oldio=$IO
  o "lsof":(shell="/bin/bash":command=%cmd:parse)::"pipe"
  u "lsof"
@@ -658,6 +658,9 @@ DEBUG(%J) ; [Private] Debugging logic
  ;
 DEFREG() ; Default Region Name; *10003*
  Q $VIEW("REGION","^DD")
+ ;
+DEFFILE() ; Default Region File Name ; *10003*
+ Q $V("GVFILE",$$DEFREG)
  ;
 AUTOMARG() ;RETURNS IOM^IOSL IF IT CAN and resets terminal to those dimensions; GT.M
  ; ZEXCEPT: APC,TERM,NOECHO,WIDTH
