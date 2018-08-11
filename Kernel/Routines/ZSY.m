@@ -427,7 +427,7 @@ UNIXLSOF(procs) ; [Public] - Get all processes accessing THIS database (only!)
  ; ZEXCEPT: shell,parse
  n %cmd s %cmd="lsof -t "_$$DEFFILE
  i $ZV["CYGWIN" s %cmd="ps -a | grep mumps | grep -v grep | awk '{print $1}'"
- i $ZV["Darwin" s %cmd="pgrep mumps | xargs -n 1 -I{} lsof -p{} | grep "_$$DEFFILE_" | awk '{print $2}'"
+ i $ZV["Darwin" s %cmd="pgrep -a mumps | xargs -n 1 -I{} lsof -p{} | grep "_$$DEFFILE_" | awk '{print $2}'"
  n oldio s oldio=$IO
  o "lsof":(shell="/bin/bash":command=%cmd:parse)::"pipe"
  u "lsof"
