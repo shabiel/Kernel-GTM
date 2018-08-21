@@ -1,4 +1,4 @@
-ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;8월 09, 2018@09:19
+ZSY ;ISF/RWF,VEN/SMH - GT.M/VA system status display ;2018-08-20  12:08 PM
  ;;8.0;KERNEL;**349,10001,10002,10003**;Jul 10, 1995;Build 20
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine of unknown provenance -- was in unreleased VA patch XU*8.0*349 and thus perhaps in the public domain.
@@ -156,7 +156,7 @@ WORK(MODE,FILTER) ; [Private] Main driver, Will release lock
  ;
  ;Save $ZINTERRUPT, set new one
  N OLDINT
- S OLDINT=$ZINTERRUPT,$ZINTERRUPT="I $$JOBEXAM^ZU($ZPOSITION) S DONE=1"
+ S OLDINT=$ZINTERRUPT,$ZINTERRUPT="I $$JOBEXAM($ZPOSITION) S DONE=1"
  ;
  ;Clear old data
  S ^XUTL("XUSYS","COMMAND")="Status"
