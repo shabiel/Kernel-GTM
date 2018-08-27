@@ -78,7 +78,10 @@ BIX I $P($G(@DI2@(DIN1,0)),U)=X S DIN2=DIN1 G OLD:$$MATCH,NEW:DIV
  ;if no "B" x-ref, then check entire file for match
  S DIN2=0 I '$D(^DD(DIDD,0,"IX","B",DIDD,.01)) F  S DIN2=$O(@DI2@(DIN2)) G NEW:DIN2'>0 I $P($G(^(DIN2,0)),U)=X G OLD:$$MATCH
 BI S DIN2=$O(@DI2@("B",$E(X,1,30),DIN2)) I 'DIN2 S:$L(X)>30 DIN2=$O(@DI2@("B",X,DIN2)) G NEW:'DIN2
- I $D(@DI2@(DIN2,0)),$P(^(0),X)="" G OLD:$$MATCH ;COMPARE BY NAME
+ ;;BEGIN WorldVistA change DJW 4/23/2018 remove very rare infinite loop
+ ;was; I $D(@DI2@(DIN2,0)),$P(^(0),X)="" G OLD:$$MATCH ;COMPARE BY NAME
+ I $D(@DI2@(DIN2,0)),$P(^(0),X)="" G OLD:$$MATCH,NEW ;COMPARE BY NAME
+ ;END WorldVistA change 4/23/2018 
  G BI
  ;
 NEW S ^UTILITY("DITCP",$J,"X1",DIDD,DIN1)=X ;WILL SHOW EXTRA ENTRY ON LEFT SIDE
