@@ -73,26 +73,25 @@ SHAHASH(N,X,FLAG) ;One-Way Hash Utility, IA #6189
  U IO C "COMM"
  Q B
  ;
-B64ENCD(X) ;Base 64 Encode, IA #6189
- I $G(^%ZOSF("OS"))["OpenM" Q $System.Encryption.Base64Encode(X)
- N %COMMAND,Y
- S %COMMAND="base64"
- O "COMM":(SHELL="/bin/sh":COMM=%COMMAND)::"pipe"
- U "COMM" W X S $X=0 W /EOF ; $X of 0 prevents the code from writing LF to the stream
- F  R Y:0 Q:$L(Y)  Q:$ZEOF
- U IO C "COMM"
- Q Y
+ B64ENCD(X) ;Base 64 Encode, IA #6189
+ ; Pure Mumps Base64 encoding - shane dewitti/vitelnet
+ N P,T,Y,Z
+ S (Y,Z)=""
+ S T="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+ F I=1:1:$L(X) S Y=Y_$TR($J($$CNV^XLFUTL($A($E(X,I)),2),8)," ",0)
+ S P=$S($L(Y)#6=2:4,$L(Y)#6=4:2,1:0)
+ S:P>0 Y=$$LJ^XLFSTR(Y,$L(Y)+P,0)
+ F I=1:6:$L(Y) S Z=Z_$E(T,$$DEC^XLFUTL($E(Y,I,I+5),2)+1)
+ Q $S($L(Z)#4=2:Z_"==",$L(Z)#4=3:Z_"=",1:Z) 
  ;
 B64DECD(X) ;Base 64 Decode, IA #6189
- I $G(^%ZOSF("OS"))["OpenM" Q $System.Encryption.Base64Decode(X)
- N %COMMAND,Y
- S %COMMAND="base64 -d"
- I $G(^%ZOSF("OS"))["GT.M",$$VERSION^%ZOSV(1)["Darwin" S %COMMAND="base64 -D"
- O "COMM":(SHELL="/bin/sh":COMM=%COMMAND)::"pipe"
- U "COMM" W X S $X=0 W /EOF ; $X of 0 prevents the code from writing LF to the stream
- F  R Y:0 Q:$L(Y)  Q:$ZEOF
- U IO C "COMM"
- Q Y
+ ; Pure Mumps Base64 decoding - shane dewitt/vitelnet
+ N T,Y,Z
+ S (Y,Z)=""
+ S T="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+ F I=1:1:$L(X) Q:$E(X,I)="="  S Y=Y_$TR($J($$CNV^XLFUTL($F(T,$E(X,I))-2,2),6)," ",0)
+ F I=1:8:$L(Y) S Z=Z_$C($$DEC^XLFUTL($E(Y,I,I+7),2))
+ Q Z
  ;
 RSAENCR(TEXT,CERT,CAFILE,CRLFILE,ENC) ;RSA Encrypt, IA #6189
  ; TEXT (Required) Plaintext string to be encrypted
