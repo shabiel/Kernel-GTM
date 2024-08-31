@@ -1,11 +1,13 @@
 XUSHSH ;ISF/STAFF - ENCRYPTION/DECRYPTION UTILITIES ; 10/30/17 5:28pm
- ;;8.0;KERNEL;**655,659,10001**;Jul 10, 1995;Build 15
+ ;;8.0;KERNEL;**655,659,10001,10008**;Jul 10, 1995;Build 15
  ;Per VA Directive 6402, this routine should not be modified.
  ; Submitted to OSEHRA in 2017 by Sam Habiel for OSEHRA
  ; Original Routine authored by Department of Veterans Affairs but completely redacted.
  ; All EPs authored by Sam Habiel 2016.
  ;
+ ; *10001* Unredacted version written from scratch
  ; Written by VEN/SMH - Verified against Cache code to return same result.
+ ; *10008* Fix to $$AESENCR to make IV optional
  ;;
  ;ZEXCEPT: X ;Returned global value when called as an extrinsic subroutine.
  S X=$$EN(X)
@@ -189,7 +191,7 @@ RSADECR(TEXT,KEY,PWD,ENC) ;RSA Decrypt, IA #6189
 AESENCR(TEXT,KEY,IV) ;AES Encrypt, IA #6189
  ; TEXT (Required) Plaintext string to be encrypted
  ; KEY  (Required) Input key material 16, 24, or 32
- ; IV   (Required) Initialization vector. If this argument is present it must 
+ ; IV   (Optional) Initialization vector. If this argument is present it must 
  ;  be 16 characters long.
  I $G(^%ZOSF("OS"))["OpenM" Q $system.Encryption.AESCBCEncrypt(TEXT,KEY,IV)
  ;

@@ -31,6 +31,7 @@ Products & Installation
  | [XU\*8.0\*10003](https://github.com/shabiel/Kernel-GTM/releases/download/XU-8.0-10003/XU-8-10003-CM-BUNDLE.KID) | 6 | [10003](doc/rel/XU-8.0-10003.rel.md) | RUM/CM/SAGG/VSM Port |
  | [virgin\_install.zip (10001-10006)](https://github.com/shabiel/Kernel-GTM/releases/download/XU-8.0-10003/virgin_install.zip) | n/a | n/a | n/a |
  | [XU\*8.0\*10007](https://github.com/shabiel/Kernel-GTM/releases/download/XU-8.0-10007-alpha/XU_8-0_10007.KID) | 7 | [10007](doc/rel/XU-8.0-10007.rel.md) | Kernel Lock Manager Port |
+ | XU\*8.0\*10008 (unreleased) | 8 |  | Various small fixes (XUSHSH) |
 
 You can install these either using a KIDS build by unzipping the routines in
 the virgin\_install.zip. You should always use the KIDS build unless you have
